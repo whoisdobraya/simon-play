@@ -59,11 +59,15 @@
 
 <script>
 /* eslint-disable */
-import getRandomNumber from './helpers/getRandomNumber';
-import { DELAY, STEP } from './helpers/variables';
+import getRandomNumber from "./helpers/getRandomNumber";
+import { DELAY, STEP } from "./helpers/variables";
+import sound1 from "./sounds/1.ogg";
+import sound2 from "./sounds/2.ogg";
+import sound3 from "./sounds/3.ogg";
+import sound4 from "./sounds/4.ogg";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {},
   data() {
     return {
@@ -71,17 +75,28 @@ export default {
       stateOfPlay: "none",
       currentLevel: "easy",
       currentSpeed: 1500,
-      activeButton: '',
+      activeButton: "",
       levels: {
-        easy: { type: 'radio', label: 'Easy', value: 'easy', speed: 1500 },
-        middle: { type: 'radio', label: 'Middle', value: 'middle', speed: 1000 },
-        hard: { type: 'radio', label: 'Hard', value: 'hard', speed: 400 },
+        easy: { type: "radio", label: "Easy", value: "easy", speed: 1500 },
+        middle: {
+          type: "radio",
+          label: "Middle",
+          value: "middle",
+          speed: 1000,
+        },
+        hard: { type: "radio", label: "Hard", value: "hard", speed: 400 },
       },
       buttons: [
-        { color: 'red', sound: 'http://www.kellyking.me/projects/simon/sounds/1.ogg' },
-        { color: 'blue', sound: 'http://www.kellyking.me/projects/simon/sounds/2.ogg' },
-        { color: 'yellow', sound: 'http://www.kellyking.me/projects/simon/sounds/3.ogg' },
-        { color: 'green', sound: 'http://www.kellyking.me/projects/simon/sounds/4.ogg' },
+        { color: "red", sound: sound1 },
+        { color: "blue", sound: sound2 },
+        {
+          color: "yellow",
+          sound: sound3,
+        },
+        {
+          color: "green",
+          sound: sound4,
+        },
       ],
       userSteps: [],
       stepsOfPlay: {
@@ -92,7 +107,7 @@ export default {
   },
   methods: {
     startPlay() {
-      this.stateOfPlay = 'preparing';
+      this.stateOfPlay = "preparing";
     },
     createStep() {
       const { colors, sounds } = this.stepsOfPlay;
@@ -101,14 +116,20 @@ export default {
       const { color, sound } = this.buttons[random];
       colors.push(color);
       sounds.push(sound);
-      this.stateOfPlay = 'playing';
+      this.stateOfPlay = "playing";
     },
     playStep() {
       const { colors, sounds } = this.stepsOfPlay;
       sounds.forEach((sound, i) => {
-        setTimeout(() => this.activateButton(sound, colors[i]), this.currentSpeed * (i + STEP));
-      })
-      setTimeout(() => this.stateOfPlay = 'entering', this.currentSpeed * sounds.length);
+        setTimeout(
+          () => this.activateButton(sound, colors[i]),
+          this.currentSpeed * (i + STEP)
+        );
+      });
+      setTimeout(
+        () => (this.stateOfPlay = "entering"),
+        this.currentSpeed * sounds.length
+      );
     },
     playSound(sound) {
       const audio = new Audio(sound);
@@ -117,23 +138,30 @@ export default {
     activateButton(sound, color) {
       this.activeButton = color;
       const audio = this.playSound(sound);
-      audio.then(() => setTimeout(() => this.activeButton = '', DELAY.ACTIVE_COLOR));
+      audio.then(() =>
+        setTimeout(() => (this.activeButton = ""), DELAY.ACTIVE_COLOR)
+      );
     },
     addUserStep({ target }) {
       const color = target.dataset.color;
       if (!color) return;
       this.userSteps.push(color);
-      const { sound }  = this.buttons.filter((button) => button.color === color)[0];
+      const { sound } = this.buttons.filter(
+        (button) => button.color === color
+      )[0];
       this.activateButton(sound, color);
     },
     checkUserSteps() {
-      const allRight = this.userSteps.every((step, i) => step === this.stepsOfPlay.colors[i]);
-      const countSteps = this.userSteps.length === this.stepsOfPlay.colors.length;
-      if (!allRight) this.stateOfPlay = 'failed';
-      if (allRight && !countSteps) this.stateOfPlay = 'entering';
+      const allRight = this.userSteps.every(
+        (step, i) => step === this.stepsOfPlay.colors[i]
+      );
+      const countSteps =
+        this.userSteps.length === this.stepsOfPlay.colors.length;
+      if (!allRight) this.stateOfPlay = "failed";
+      if (allRight && !countSteps) this.stateOfPlay = "entering";
       if (allRight && countSteps) {
         this.userSteps = [];
-        this.stateOfPlay = 'preparing';
+        this.stateOfPlay = "preparing";
       }
     },
   },
@@ -144,7 +172,7 @@ export default {
   },
   watch: {
     stateOfPlay() {
-      switch(this.stateOfPlay) {
+      switch (this.stateOfPlay) {
         case "preparing": {
           this.round++;
           this.createStep();
@@ -168,7 +196,7 @@ export default {
     },
     userSteps() {
       if (this.userSteps.length > 0) {
-        this.stateOfPlay = 'checking';
+        this.stateOfPlay = "checking";
       }
     },
     currentLevel() {
@@ -182,8 +210,8 @@ export default {
 <style lang="scss">
 body {
   background-color: #323232;
-  color: #FFFFFF;
-  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  color: #ffffff;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 }
 #app {
   margin-left: 80px;
@@ -210,15 +238,14 @@ body {
 
 .game-over {
   font-size: 46px;
-  color: #FF9E9E;
+  color: #ff9e9e;
   text-align: center;
   font-weight: 600;
   word-spacing: 2%;
   text-transform: uppercase;
 }
 
-.settings{
-
+.settings {
   &__buttons {
     display: flex;
     flex-direction: column;
@@ -243,7 +270,7 @@ body {
 
 .round {
   font-size: 40px;
-  color: #9EFFB6;
+  color: #9effb6;
   margin-bottom: 40px;
 }
 
@@ -253,7 +280,6 @@ body {
   flex-basis: 60%;
   width: 100%;
   max-height: 400px;
-
 }
 .button {
   border: 3px solid #323232;
@@ -261,42 +287,39 @@ body {
   opacity: 0.6;
 
   &--red {
-    background-color: #FF9E9E;
+    background-color: #ff9e9e;
     border-top-left-radius: 100%;
   }
   &--blue {
-    background-color: #BD9EFF;
+    background-color: #bd9eff;
     border-top-right-radius: 100%;
   }
   &--yellow {
-    background-color: #FFFF99;
+    background-color: #ffff99;
     border-bottom-left-radius: 100%;
   }
   &--green {
-    background-color: #9EFFB6;
+    background-color: #9effb6;
     border-bottom-right-radius: 100%;
   }
-
 }
-  .active {
-    opacity: 1;
+.active {
+  opacity: 1;
+}
+
+.button-start {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  padding: 60px 50px;
+  border-radius: 100%;
+  border: 0;
+  color: #323232;
+  font-size: 24px;
+  background-color: #ffff99;
+  margin-top: 50px;
+  margin-left: 200px;
+
+  &:disabled {
+    opacity: 0.55;
   }
-
-  .button-start {
-    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    padding: 60px 50px;
-    border-radius: 100%;
-    border: 0;
-    color: #323232;
-    font-size: 24px;
-    background-color: #FFFF99;
-    margin-top: 50px;
-    margin-left: 200px;
-
-    &:disabled {
-      opacity: 0.55;
-    }
-  }
-
-
+}
 </style>
